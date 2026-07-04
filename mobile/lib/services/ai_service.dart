@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class AIService {
   // ⚠️ Pour l’instant backend fictif (sera remplacé par Node.js)
-  final String baseUrl = "https://ton-backend.com";
+  final String baseUrl = "http://localhost:3000/api";
 
   Future<String> generateLesson({
     required String classe,
