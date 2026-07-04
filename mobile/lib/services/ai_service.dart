@@ -14,16 +14,18 @@ final String apiKey = "mon_cahier_ai_secret_123";
   }) async {
     try {
       final response = await http.post(
-        Uri.parse("$baseUrl/ai/generate"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "classe": classe,
-          "discipline": discipline,
-          "lecon": lecon,
-          "duree": duree,
-        }),
-      );
-
+  Uri.parse("$baseUrl/ai/generate"),
+  headers: {
+    "Content-Type": "application/json",
+    "x-api-key": apiKey,
+  },
+  body: jsonEncode({
+    "classe": classe,
+    "discipline": discipline,
+    "lecon": lecon,
+    "duree": duree,
+  }),
+);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return data["result"] ?? "Aucune réponse IA";
