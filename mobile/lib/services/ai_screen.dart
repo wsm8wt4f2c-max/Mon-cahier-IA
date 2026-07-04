@@ -19,24 +19,30 @@ class _AIScreenState extends State<AIScreen> {
   String result = "";
   bool loading = false;
 
-  Future<void> generate() async {
-    setState(() {
-      loading = true;
-      result = "";
-    });
+  void generate() async {
+  final sub = SubscriptionService();
 
-    final res = await ai.generateLesson(
-      classe: classe.text,
-      discipline: discipline.text,
-      lecon: lecon.text,
-      duree: duree.text,
-    );
-
+  if (!sub.canUseAI()) {
     setState(() {
-      result = res;
-      loading = false;
+      result = "⛔ Accès bloqué. Passez en Premium.";
     });
+    return;
   }
+
+  setState(() => loading = true);
+
+  final res = await ai.generateLesson(
+    classe: classe.text,
+    discipline: discipline.text,
+    lecon: lecon.text,
+    duree: duree.text,
+  );
+
+  setState(() {
+    result = res;
+    loading = false;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
