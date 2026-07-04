@@ -9,12 +9,18 @@ class PremiumScreen extends StatefulWidget {
 }
 
 class _PremiumScreenState extends State<PremiumScreen> {
-  final sub = SubscriptionService();
+  final SubscriptionService sub = SubscriptionService();
 
-  void buyPremium() {
+  void activatePremium() {
     setState(() {
       sub.activatePremium();
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("🎉 Premium activé avec succès"),
+      ),
+    );
   }
 
   @override
@@ -27,8 +33,11 @@ class _PremiumScreenState extends State<PremiumScreen> {
           children: [
 
             const Text(
-              "Débloquez toutes les fonctionnalités IA",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              "Débloquez toute la puissance de l’IA",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -47,7 +56,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 title: const Text("Mensuel"),
                 subtitle: const Text("2000 FCFA / mois"),
                 trailing: ElevatedButton(
-                  onPressed: buyPremium,
+                  onPressed: activatePremium,
                   child: const Text("Activer"),
                 ),
               ),
@@ -58,7 +67,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 title: const Text("Annuel"),
                 subtitle: const Text("15000 FCFA / an"),
                 trailing: ElevatedButton(
-                  onPressed: buyPremium,
+                  onPressed: activatePremium,
                   child: const Text("Activer"),
                 ),
               ),
