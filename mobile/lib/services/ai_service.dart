@@ -5,6 +5,7 @@ class AIService {
   // ⚠️ Pour l’instant backend fictif (sera remplacé par Node.js)
   final String baseUrl = "http://localhost:3000/api";
 
+final String apiKey = "mon_cahier_ai_secret_123";
   Future<String> generateLesson({
     required String classe,
     required String discipline,
