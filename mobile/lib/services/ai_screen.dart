@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/ai_service.dart';
+import '../services/subscription_service.dart';
 
 class AIScreen extends StatefulWidget {
   const AIScreen({super.key});
@@ -15,34 +16,45 @@ class _AIScreenState extends State<AIScreen> {
   final TextEditingController duree = TextEditingController();
 
   final AIService ai = AIService();
+  final SubscriptionService sub = SubscriptionService();
 
   String result = "";
   bool loading = false;
 
   void generate() async {
-  final sub = SubscriptionService();
+    if (!sub.canUseAI()) {
+      setState(() {
+        result = "⛔ Accès bloqué.\nPassez en Premium pour continuer.";
+      });
+      return;
+    }
 
-  if (!sub.canUseAI()) {
     setState(() {
-      result = "⛔ Accès bloqué. Passez en Premium.";
+      loading = true;
+      result = "";
     });
-    return;
+
+    try {
+      final res = await ai.generateLesson(
+        classe: classe.text,
+        discipline: discipline.text,
+        lecon: lecon.text,
+        duree: duree.text,
+      );
+
+      setState(() {
+        result = res;
+        loading = false;
+      });
+
+      sub.useTrialDay();
+    } catch (e) {
+      setState(() {
+        result = "Erreur IA : $e";
+        loading = false;
+      });
+    }
   }
-
-  setState(() => loading = true);
-
-  final res = await ai.generateLesson(
-    classe: classe.text,
-    discipline: discipline.text,
-    lecon: lecon.text,
-    duree: duree.text,
-  );
-
-  setState(() {
-    result = res;
-    loading = false;
-  });
-}
 
   @override
   Widget build(BuildContext context) {
