@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AIService {
-  final String baseUrl = "https://ton-backend.com"; 
-  // on remplacera plus tard par vrai backend
+  // ⚠️ Pour l’instant backend fictif (sera remplacé par Node.js)
+  final String baseUrl = "https://ton-backend.com";
 
   Future<String> generateLesson({
     required String classe,
@@ -11,23 +11,26 @@ class AIService {
     required String lecon,
     required String duree,
   }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/ai/generate"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "classe": classe,
+          "discipline": discipline,
+          "lecon": lecon,
+          "duree": duree,
+        }),
+      );
 
-    final response = await http.post(
-      Uri.parse("$baseUrl/ai/generate"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "classe": classe,
-        "discipline": discipline,
-        "lecon": lecon,
-        "duree": duree,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data["result"];
-    } else {
-      return "Erreur IA";
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data["result"] ?? "Aucune réponse IA";
+      } else {
+        return "Erreur serveur IA (${response.statusCode})";
+      }
+    } catch (e) {
+      return "Erreur de connexion IA : $e";
     }
   }
 }
