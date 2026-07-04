@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/subscription_service.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
@@ -11,17 +13,26 @@ class PremiumScreen extends StatefulWidget {
 class _PremiumScreenState extends State<PremiumScreen> {
   final SubscriptionService sub = SubscriptionService();
 
-  void activatePremium() {
+  void activatePremium(String plan) async {
+  final response = await http.post(
+    Uri.parse("http://localhost:3000/api/payment/subscribe"),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "userId": "demo_user",
+      "plan": plan,
+    }),
+  );
+
+  if (response.statusCode == 200) {
     setState(() {
       sub.activatePremium();
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("🎉 Premium activé avec succès"),
-      ),
+      const SnackBar(content: Text("🎉 Paiement réussi")),
     );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +67,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 title: const Text("Mensuel"),
                 subtitle: const Text("2000 FCFA / mois"),
                 trailing: ElevatedButton(
-                  onPressed: activatePremium,
+                  onPressed: () => activatePremium("monthly"),
                   child: const Text("Activer"),
                 ),
               ),
@@ -67,7 +78,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 title: const Text("Annuel"),
                 subtitle: const Text("15000 FCFA / an"),
                 trailing: ElevatedButton(
-                  onPressed: activatePremium,
+                onPressed: () => activatePremium("yearly"),
                   child: const Text("Activer"),
                 ),
               ),
