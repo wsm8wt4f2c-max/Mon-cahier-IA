@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'ai_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,13 +14,21 @@ class HomeScreen extends StatelessWidget {
         title: const Text("Mon Cahier AI"),
         actions: [
           IconButton(
-            onPressed: () => auth.logout(),
             icon: const Icon(Icons.logout),
+            onPressed: () => auth.logout(),
           )
         ],
       ),
-      body: const Center(
-        child: Text("Dashboard enseignant"),
+      body: Center(
+        child: ElevatedButton(
+          child: const Text("🤖 Ouvrir IA pédagogique"),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AIScreen()),
+            );
+          },
+        ),
       ),
     );
   }
