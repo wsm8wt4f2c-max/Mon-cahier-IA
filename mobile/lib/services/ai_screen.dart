@@ -1,33 +1,94 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import '../services/ai_service.dart';
 
-class AIService {
-  final String baseUrl = "https://ton-backend.com"; 
-  // on remplacera plus tard par vrai backend
+class AIScreen extends StatefulWidget {
+  const AIScreen({super.key});
 
-  Future<String> generateLesson({
-    required String classe,
-    required String discipline,
-    required String lecon,
-    required String duree,
-  }) async {
+  @override
+  State<AIScreen> createState() => _AIScreenState();
+}
 
-    final response = await http.post(
-      Uri.parse("$baseUrl/ai/generate"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "classe": classe,
-        "discipline": discipline,
-        "lecon": lecon,
-        "duree": duree,
-      }),
+class _AIScreenState extends State<AIScreen> {
+  final TextEditingController classe = TextEditingController();
+  final TextEditingController discipline = TextEditingController();
+  final TextEditingController lecon = TextEditingController();
+  final TextEditingController duree = TextEditingController();
+
+  final AIService ai = AIService();
+
+  String result = "";
+  bool loading = false;
+
+  Future<void> generate() async {
+    setState(() {
+      loading = true;
+      result = "";
+    });
+
+    final res = await ai.generateLesson(
+      classe: classe.text,
+      discipline: discipline.text,
+      lecon: lecon.text,
+      duree: duree.text,
     );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data["result"];
-    } else {
-      return "Erreur IA";
-    }
+    setState(() {
+      result = res;
+      loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("IA Pédagogique")),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+
+            TextField(
+              controller: classe,
+              decoration: const InputDecoration(labelText: "Classe"),
+            ),
+
+            TextField(
+              controller: discipline,
+              decoration: const InputDecoration(labelText: "Discipline"),
+            ),
+
+            TextField(
+              controller: lecon,
+              decoration: const InputDecoration(labelText: "Leçon"),
+            ),
+
+            TextField(
+              controller: duree,
+              decoration: const InputDecoration(labelText: "Durée (min)"),
+            ),
+
+            const SizedBox(height: 12),
+
+            ElevatedButton(
+              onPressed: loading ? null : generate,
+              child: Text(loading ? "Génération..." : "Générer la fiche IA"),
+            ),
+
+            const SizedBox(height: 20),
+
+            if (loading) const CircularProgressIndicator(),
+
+            Expanded(
+              child: SingleChildScrollView(
+                child: Text(
+                  result,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
